@@ -1,3 +1,5 @@
+mod tracing;
+
 use axum::Router;
 
 #[tokio::main]
