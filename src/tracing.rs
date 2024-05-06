@@ -1,3 +1,5 @@
+use std::env;
+
 use opentelemetry_otlp::WithExportConfig;
 use opentelemetry_sdk::trace::Tracer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -5,7 +7,11 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 fn build_trace_layer() -> Tracer {
     let trace_exporter = opentelemetry_otlp::new_exporter()
         .tonic()
-        .with_endpoint("http://localhost:4317");
+        .with_endpoint(format!(
+            "{}",
+            env::var("OTLP_EXPORTER_ENDPOINT")
+                .unwrap_or_else(|_| "http://127.0.0.1:4317".to_string()),
+        ));
     let trace_config = opentelemetry_sdk::trace::config()
         .with_sampler(opentelemetry_sdk::trace::Sampler::AlwaysOn)
         .with_id_generator(opentelemetry_sdk::trace::RandomIdGenerator::default())
