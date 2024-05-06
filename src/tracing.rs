@@ -23,7 +23,7 @@ fn build_trace_layer() -> Tracer {
         .with_exporter(trace_exporter)
         .with_trace_config(trace_config)
         .install_batch(opentelemetry_sdk::runtime::Tokio)
-        .expect("pipeline install failed")
+        .expect("Failed to install opentelemetry pipeline")
 }
 
 pub fn init() {

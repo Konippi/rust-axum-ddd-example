@@ -1,12 +1,36 @@
 mod tracing;
 
-use std::env;
+use std::{env, future};
 
 use axum::Router;
 use dotenv;
 
+async fn shutdown_signal() {
+    let ctrl_c = async {
+        tokio::signal::ctrl_c()
+            .await
+            .expect("Failed to install CTRL+C signal handler");
+    };
+
+    #[cfg(unix)]
+    let terminate = async {
+        tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+            .expect("Failed to install SIGTERM signal handler")
+            .recv()
+            .await;
+    };
+
+    #[cfg(not(unix))]
+    let terminate = future::pending::<()>();
+
+    tokio::select! {
+        _ = ctrl_c => {},
+        _ = terminate => {},
+    }
+}
+
 #[tokio::main]
-async fn main() -> std::io::Result<()> {
+async fn main() {
     // Load environment variables
     dotenv::from_filename(format!(
         ".env.{}",
@@ -26,7 +50,8 @@ async fn main() -> std::io::Result<()> {
     .await
     .unwrap();
 
-    axum::serve(listener, app).await.unwrap();
-
-    Ok(())
+    axum::serve(listener, app)
+        .with_graceful_shutdown(shutdown_signal())
+        .await
+        .unwrap()
 }
