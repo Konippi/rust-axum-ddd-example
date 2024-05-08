@@ -1,6 +1,9 @@
+mod handlers;
+mod model;
+mod router;
 mod trace;
 
-use axum::{routing::get, Router};
+use axum::Router;
 use tower_http::{timeout::TimeoutLayer, trace::TraceLayer};
 
 #[tokio::main]
@@ -15,12 +18,10 @@ async fn main() {
     // Initialize tracing
     trace::init();
 
-    let app = Router::new()
-        .route("/", get(|| async { "Hello, world!" }))
-        .layer((
-            TraceLayer::new_for_http(),
-            TimeoutLayer::new(std::time::Duration::from_secs(5)),
-        ));
+    let app = Router::new().nest("/health", router::health()).layer((
+        TraceLayer::new_for_http(),
+        TimeoutLayer::new(std::time::Duration::from_secs(5)),
+    ));
     let listener = tokio::net::TcpListener::bind(format!(
         "{}:{}",
         std::env::var("SERVER_HOST").unwrap_or_else(|_| "0.0.0.0".to_string()),
@@ -29,7 +30,7 @@ async fn main() {
     .await
     .unwrap();
 
-    tracing::info!("Running on [{}]", listener.local_addr().unwrap());
+    tracing::info!("Running on {} 🚀", listener.local_addr().unwrap());
 
     axum::serve(listener, app)
         .with_graceful_shutdown(shutdown_signal())
@@ -37,6 +38,7 @@ async fn main() {
         .unwrap()
 }
 
+/// Signal handler for graceful shutdown
 async fn shutdown_signal() {
     let ctrl_c = async {
         tokio::signal::ctrl_c()
@@ -54,6 +56,9 @@ async fn shutdown_signal() {
 
     #[cfg(not(unix))]
     let terminate = future::pending::<()>();
+
+    // Shutdown OpenTelemetry
+    opentelemetry::global::shutdown_tracer_provider();
 
     tokio::select! {
         _ = ctrl_c => {},
