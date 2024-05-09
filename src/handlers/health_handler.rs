@@ -1,8 +1,11 @@
-use crate::model::ApiResult;
-use axum::{http::StatusCode, response::IntoResponse, Json};
+use crate::model::{ApiResponse, ApiResult};
+use axum::{http::StatusCode, Json};
 use serde_json::json;
 
 #[tracing::instrument]
-pub async fn health_check() -> ApiResult<impl IntoResponse> {
-    Ok((StatusCode::OK, Json(json!({"message": "OK"}))))
+pub async fn health_check() -> ApiResult {
+    Ok(ApiResponse::new(
+        StatusCode::OK,
+        Json(json!({"message": "OK"})),
+    ))
 }

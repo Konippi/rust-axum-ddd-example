@@ -5,9 +5,27 @@ use axum::{
 };
 use serde_json::{json, Value};
 
-pub struct ApiError {
+pub struct ApiResponse {
     status: StatusCode,
     response: Json<Value>,
+}
+
+impl ApiResponse {
+    /// Helper to create an `ApiResponse` with a custom status code and message.
+    pub fn new(status: StatusCode, response: Json<Value>) -> Self {
+        Self { status, response }
+    }
+}
+
+impl IntoResponse for ApiResponse {
+    fn into_response(self) -> Response {
+        (self.status, self.response).into_response()
+    }
+}
+
+pub struct ApiError {
+    status: StatusCode,
+    message: Json<Value>,
 }
 
 impl<E> From<E> for ApiError
@@ -18,7 +36,7 @@ where
     fn from(error: E) -> Self {
         Self {
             status: StatusCode::INTERNAL_SERVER_ERROR,
-            response: Json(json!({
+            message: Json(json!({
                 "error": format!("{:#?}", error.into())
             })),
         }
@@ -28,8 +46,8 @@ where
 impl IntoResponse for ApiError {
     /// Convert the `ApiError` into an `axum::Response`.
     fn into_response(self) -> Response {
-        (self.status, self.response).into_response()
+        (self.status, self.message).into_response()
     }
 }
 
-pub type ApiResult<T> = anyhow::Result<T, ApiError>;
+pub type ApiResult = anyhow::Result<ApiResponse, ApiError>;
