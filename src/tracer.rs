@@ -4,12 +4,12 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 pub fn init() {
     tracing_subscriber::Registry::default()
-        .with(tracing_opentelemetry::layer().with_tracer(build_trace_layer()))
+        .with(tracing_opentelemetry::layer().with_tracer(build_tracer()))
         .with(tracing_subscriber::fmt::layer().json())
         .init();
 }
 
-fn build_trace_layer() -> Tracer {
+fn build_tracer() -> Tracer {
     let trace_exporter = opentelemetry_otlp::new_exporter()
         .tonic()
         .with_endpoint(format!(

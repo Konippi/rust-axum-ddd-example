@@ -1,7 +1,7 @@
 mod handlers;
 mod model;
 mod router;
-mod trace;
+mod tracer;
 
 use axum::Router;
 use tower_http::{timeout::TimeoutLayer, trace::TraceLayer};
@@ -16,11 +16,11 @@ async fn main() {
     .expect("Failed to load .env file");
 
     // Initialize tracing
-    trace::init();
+    tracer::init();
 
     let app = Router::new().nest("/health", router::health()).layer((
         TraceLayer::new_for_http(),
-        TimeoutLayer::new(std::time::Duration::from_secs(5)),
+        TimeoutLayer::new(std::time::Duration::from_secs(10)),
     ));
     let listener = tokio::net::TcpListener::bind(format!(
         "{}:{}",
@@ -58,7 +58,9 @@ async fn shutdown_signal() {
     let terminate = future::pending::<()>();
 
     // Shutdown OpenTelemetry
-    opentelemetry::global::shutdown_tracer_provider();
+    tokio::task::spawn_blocking(opentelemetry::global::shutdown_tracer_provider)
+        .await
+        .unwrap();
 
     tokio::select! {
         _ = ctrl_c => {},
