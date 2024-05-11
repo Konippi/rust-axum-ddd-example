@@ -10,9 +10,12 @@ dotenv = "0.15.0"
 opentelemetry = "0.22.0"
 opentelemetry-otlp = "0.15.0"
 opentelemetry_sdk = { version = "0.22.1", features = ["rt-tokio"] }
+qrcode = "0.14.0"
+serde = { version = "1.0.201", features = ["derive"] }
 serde_json = "1.0.116"
+thiserror = "1.0.60"
 tokio = { version="1.37.0", features=["full"] }
-totp-rs = { version = "5.5.1", features = ["qr"] }
+totp-rs = { version = "5.5.1", features = ["qr", "gen_secret"] }
 tower-http = { version = "0.5.2", features = ["trace", "timeout"] }
 tracing = "0.1.40"
 tracing-opentelemetry = "0.23.0"
