@@ -1,7 +1,8 @@
 mod handlers;
-mod model;
+mod models;
 mod router;
 mod tracer;
+mod usecases;
 
 use axum::Router;
 use tower_http::{timeout::TimeoutLayer, trace::TraceLayer};
@@ -18,10 +19,13 @@ async fn main() {
     // Initialize tracing
     tracer::init();
 
-    let app = Router::new().nest("/health", router::health()).layer((
-        TraceLayer::new_for_http(),
-        TimeoutLayer::new(std::time::Duration::from_secs(10)),
-    ));
+    let app = Router::new()
+        .nest("/health", router::health())
+        // .nest("/auth", router::auth())
+        .layer((
+            TraceLayer::new_for_http(),
+            TimeoutLayer::new(std::time::Duration::from_secs(10)),
+        ));
     let listener = tokio::net::TcpListener::bind(format!(
         "{}:{}",
         std::env::var("SERVER_HOST").unwrap_or_else(|_| "0.0.0.0".to_string()),

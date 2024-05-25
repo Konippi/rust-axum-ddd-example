@@ -1,1 +1,9 @@
+# env files
+.env.*
+!.env.sample
+
+# build
 /target
+
+# docker
+/docker/postgres/data
