@@ -1,7 +1,5 @@
 #!/bin/sh -eu
 
-echo "Creating a user..."
-
 psql -v ON_ERROR_STOP=1 -U "${POSTGRES_USER}" <<- _EOT_
     BEGIN;
         CREATE USER ${POSTGRES_APP_USER} WITH PASSWORD '${POSTGRES_APP_PASSWORD}';
