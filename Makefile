@@ -40,3 +40,8 @@ gen-migration:
 migrate:
 	@echo "Migrating database..."
 	@sqlx migrate run --database-url ${DATABASE_URL}
+
+.PHONY: rollback
+rollback:
+	@echo "Rolling back database..."
+	@sqlx migrate revert --database-url ${DATABASE_URL}
