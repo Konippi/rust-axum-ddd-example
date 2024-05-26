@@ -39,5 +39,4 @@ gen-migration:
 .PHONY: migrate
 migrate:
 	@echo "Migrating database..."
-	@echo "DATABASE_URL: ${DATABASE_URL}"
 	@sqlx migrate run --database-url ${DATABASE_URL}
