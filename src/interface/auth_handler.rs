@@ -1,8 +1,8 @@
 use axum::{http::StatusCode, Json};
 
 use crate::{
-    models::api::{ApiResponse, ApiResult},
-    usecases::auth_usecase::AuthUsecase,
+    model::api::{ApiResponse, ApiResult},
+    usecase::auth_usecase::AuthUsecase,
 };
 
 // #[tracing::instrument]

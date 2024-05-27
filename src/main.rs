@@ -1,23 +1,27 @@
-mod handlers;
-mod models;
+mod config;
+mod domain;
+mod entity;
+mod infrastructure;
+mod interface;
+mod model;
 mod router;
-mod tracer;
-mod usecases;
+mod usecase;
 
 use axum::Router;
+use config::{Config, CONFIG};
+use infrastructure::{db::Db, opentelemetry::OpenTelemetry};
 use tower_http::{timeout::TimeoutLayer, trace::TraceLayer};
 
 #[tokio::main]
 async fn main() {
     // Load environment variables
-    dotenv::from_filename(format!(
-        ".env.{}",
-        std::env::var("SERVER_ENV").unwrap_or_else(|_| "local".to_string())
-    ))
-    .expect("Failed to load .env file");
+    Config::init();
 
-    // Initialize tracing
-    tracer::init();
+    // Initialize OpenTelemetry
+    OpenTelemetry::init();
+
+    // Pool connection to DB
+    let pool = Db::create_pool();
 
     let app = Router::new()
         .nest("/health", router::health())
@@ -26,13 +30,11 @@ async fn main() {
             TraceLayer::new_for_http(),
             TimeoutLayer::new(std::time::Duration::from_secs(10)),
         ));
-    let listener = tokio::net::TcpListener::bind(format!(
-        "{}:{}",
-        std::env::var("SERVER_HOST").unwrap_or_else(|_| "0.0.0.0".to_string()),
-        std::env::var("SERVER_PORT").unwrap_or_else(|_| "8080".to_string())
-    ))
-    .await
-    .unwrap();
+
+    let listener =
+        tokio::net::TcpListener::bind(format!("{}:{}", CONFIG.server_host, CONFIG.server_port))
+            .await
+            .unwrap();
 
     tracing::info!("Running on {} 🚀", listener.local_addr().unwrap());
 

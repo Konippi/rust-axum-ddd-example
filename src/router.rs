@@ -3,7 +3,7 @@ use axum::{
     Router,
 };
 
-use crate::handlers::{auth_handler, health_handler};
+use crate::interface::{auth_handler, health_handler};
 
 pub fn health() -> Router {
     Router::new().route("/", get(health_handler::health_check))

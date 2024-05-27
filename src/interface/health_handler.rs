@@ -1,7 +1,7 @@
 use axum::{http::StatusCode, Json};
 use serde_json::json;
 
-use crate::models::api::{ApiResponse, ApiResult};
+use crate::model::api::{ApiResponse, ApiResult};
 
 #[tracing::instrument]
 pub async fn health_check() -> ApiResult {

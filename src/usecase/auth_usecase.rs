@@ -1,7 +1,7 @@
 use qrcode::{types::QrError, QrCode};
 use totp_rs::{Secret, TOTP};
 
-use crate::models::auth::Auth;
+use crate::model::auth::Auth;
 
 pub struct AuthUsecase;
 
