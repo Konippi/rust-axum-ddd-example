@@ -1,0 +1,58 @@
+[env]
+ENV = "local"
+
+[env.dev]
+ENV = "dev"
+
+[env.prod]
+ENV = "prod"
+
+[tasks.docker-build]
+category = "docker"
+description = "Build docker images"
+script = [
+    '''
+    echo "Building docker images..."
+    docker compose --env-file .env.${ENV} build
+    '''
+]
+
+[tasks.docker-build-run]
+category = "docker"
+description = "Build and start docker containers"
+script = [
+    '''
+    echo "Building and Starting containers..."
+    docker compose --env-file .env.${ENV} up -d --build
+    '''
+]
+
+[tasks.docker-run]
+category = "docker"
+description = "Start docker containers"
+script = [
+    '''
+    echo "Starting containers..."
+    docker compose --env-file .env.${ENV} up -d
+    '''
+]
+
+[tasks.docker-stop]
+category = "docker"
+description = "Stop docker containers"
+script = [
+    '''
+    echo "Stopping containers..."
+    docker compose --env-file .env.${ENV} down
+    '''
+]
+
+[tasks.enter-psql]
+category = "psql"
+description = "Enter psql container"
+script = [
+    '''
+    echo "Entering psql container..."
+    docker exec -it totp-based-2fa-server-postgres bash
+    '''
+]
