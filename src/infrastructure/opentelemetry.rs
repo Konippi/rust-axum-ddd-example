@@ -24,7 +24,7 @@ impl OpenTelemetry {
             .with_sampler(opentelemetry_sdk::trace::Sampler::AlwaysOn)
             .with_id_generator(opentelemetry_sdk::trace::RandomIdGenerator::default())
             .with_resource(opentelemetry_sdk::Resource::new(vec![
-                opentelemetry::KeyValue::new("service.name", "totp-based-2fa-server"),
+                opentelemetry::KeyValue::new("service.name", "rust-axum-ddd-example"),
             ]));
         opentelemetry_otlp::new_pipeline()
             .tracing()

@@ -1,3 +1,9 @@
+env_files = [  
+    ".env.local",
+    { path = ".env.dev", profile = "dev" },
+    { path = ".env.prod", profile = "prod"}
+]
+
 [env]
 ENV = "local"
 
@@ -48,11 +54,41 @@ script = [
 ]
 
 [tasks.enter-psql]
-category = "psql"
+category = "docker"
 description = "Enter psql container"
 script = [
     '''
     echo "Entering psql container..."
-    docker exec -it totp-based-2fa-server-postgres bash
+    docker exec -it rust-axum-ddd-example-postgres bash
+    '''
+]
+
+[tasks.sqlx-migrate]
+category = "sqlx"
+description = "Run migrations"
+script = [
+    '''
+    echo "Running migrations..."
+    sqlx migrate run --database-url ${DATABASE_URL}
+    '''
+]
+
+[tasks.sqlx-rollback]
+category = "sqlx"
+description = "Rollback migrations"
+script = [
+    '''
+    echo "Rolling back migrations..."
+    sqlx migrate revert --database-url ${DATABASE_URL}
+    '''
+]
+
+[tasks.sea-orm-gen]
+category = "sea-orm"
+description = "Generate entities by SeaORM"
+script = [
+    '''
+    echo "Generating entities..."
+    sea-orm-cli generate entity -u ${DATABASE_URL} -o src/domain/entity
     '''
 ]

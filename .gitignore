@@ -1,6 +1,6 @@
 # env files
 .env.*
-!.env.sample
+!.env.local
 
 # build
 /target

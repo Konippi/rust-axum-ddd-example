@@ -1,8 +1,8 @@
-name: totp-based-2fa-server
+name: rust-axum-ddd-example
 
 services:
   postgres:
-    container_name: totp-based-2fa-server-postgres
+    container_name: rust-axum-ddd-example-postgres
     build:
       context: docker/postgres
       dockerfile: Dockerfile

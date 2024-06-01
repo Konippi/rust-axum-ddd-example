@@ -1,6 +1,5 @@
 mod config;
 mod domain;
-mod entity;
 mod infrastructure;
 mod interface;
 mod model;
@@ -12,6 +11,8 @@ use config::{Config, CONFIG};
 use infrastructure::{db::Db, opentelemetry::OpenTelemetry};
 use tower_http::{timeout::TimeoutLayer, trace::TraceLayer};
 
+pub struct DBConn(pub Db);
+
 #[tokio::main]
 async fn main() {
     // Load environment variables
@@ -21,15 +22,17 @@ async fn main() {
     OpenTelemetry::init();
 
     // Pool connection to DB
-    let pool = Db::create_pool();
+    let db_conn = Db::create_connection();
 
+    let state = DBConn(db_conn);
     let app = Router::new()
         .nest("/health", router::health())
         // .nest("/auth", router::auth())
         .layer((
             TraceLayer::new_for_http(),
             TimeoutLayer::new(std::time::Duration::from_secs(10)),
-        ));
+        ))
+        .with_state(state);
 
     let listener =
         tokio::net::TcpListener::bind(format!("{}:{}", CONFIG.server_host, CONFIG.server_port))
