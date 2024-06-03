@@ -6,12 +6,16 @@ mod model;
 mod router;
 mod usecase;
 
+use std::sync::Arc;
+
 use axum::Router;
 use config::{Config, CONFIG};
 use infrastructure::{db::Db, opentelemetry::OpenTelemetry};
 use tower_http::{timeout::TimeoutLayer, trace::TraceLayer};
 
-pub struct DBConn(pub Db);
+pub struct AppState {
+    db: Arc<Db>,
+}
 
 #[tokio::main]
 async fn main() {
@@ -22,17 +26,14 @@ async fn main() {
     OpenTelemetry::init();
 
     // Pool connection to DB
-    let db_conn = Db::create_connection();
-
-    let state = DBConn(db_conn);
+    let db_conn = Arc::new(Db::init().await);
     let app = Router::new()
         .nest("/health", router::health())
-        // .nest("/auth", router::auth())
         .layer((
             TraceLayer::new_for_http(),
             TimeoutLayer::new(std::time::Duration::from_secs(10)),
         ))
-        .with_state(state);
+        .with_state(db_conn);
 
     let listener =
         tokio::net::TcpListener::bind(format!("{}:{}", CONFIG.server_host, CONFIG.server_port))
