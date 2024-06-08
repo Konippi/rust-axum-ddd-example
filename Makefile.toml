@@ -59,11 +59,11 @@ description = "Enter psql container"
 script = [
     '''
     echo "Entering psql container..."
-    docker exec -it rust-axum-ddd-example-postgres bash
+    docker exec -it rust-axum-ddd-example-postgres psql -U ${POSTGRES_APP_USER} -d ${POSTGRES_DB}
     '''
 ]
 
-[tasks.sqlx-migrate]
+[tasks.db-migrate]
 category = "sqlx"
 description = "Run migrations"
 script = [
@@ -73,7 +73,7 @@ script = [
     '''
 ]
 
-[tasks.sqlx-rollback]
+[tasks.db-rollback]
 category = "sqlx"
 description = "Rollback migrations"
 script = [
@@ -83,12 +83,12 @@ script = [
     '''
 ]
 
-[tasks.sea-orm-gen]
+[tasks.entity-gen]
 category = "sea-orm"
 description = "Generate entities by SeaORM"
 script = [
     '''
     echo "Generating entities..."
-    sea-orm-cli generate entity -u ${DATABASE_URL} -o src/domain/entity
+    sea-orm-cli generate entity -u ${DATABASE_URL} -o src/infrastructure/db/entity
     '''
 ]
