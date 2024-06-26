@@ -1,22 +1,23 @@
+use std::time::Duration;
+
+use axum::Router;
+use tower_http::{timeout::TimeoutLayer, trace::TraceLayer};
+
+use crate::{
+    config::{Config, CONFIG},
+    di_container::DiContainer,
+    infrastructure::opentelemetry::OpenTelemetry,
+};
+
+mod di_container;
 mod config;
 mod domain;
 mod infrastructure;
 mod interface;
 mod model;
 mod router;
-mod usecase;
+mod use_case;
 
-use std::{sync::Arc, time::Duration};
-
-use axum::Router;
-use config::{Config, CONFIG};
-use infrastructure::{db::Db, opentelemetry::OpenTelemetry};
-use tower_http::{timeout::TimeoutLayer, trace::TraceLayer};
-
-#[derive(Clone, Debug)]
-struct AppState {
-    pub db: Arc<Db>,
-}
 
 #[tokio::main]
 async fn main() {
@@ -26,10 +27,7 @@ async fn main() {
     // Initialize OpenTelemetry
     OpenTelemetry::init();
 
-    // Initialize the database
-    let db = Arc::new(Db::new().await);
-
-    let app_state = AppState { db: db.clone() };
+    let di_container = DiContainer::new().await;
     let app = Router::new()
         .nest("/health", router::health())
         .nest("/users", router::user())
@@ -37,7 +35,7 @@ async fn main() {
             TraceLayer::new_for_http(),
             TimeoutLayer::new(Duration::from_secs(10)),
         ))
-        .with_state(app_state);
+        .with_state(di_container);
 
     let listener =
         tokio::net::TcpListener::bind(format!("{}:{}", CONFIG.server_host, CONFIG.server_port))
@@ -57,13 +55,13 @@ async fn shutdown_signal() {
     let ctrl_c = async {
         tokio::signal::ctrl_c()
             .await
-            .expect("Failed to install CTRL+C signal handler");
+            .unwrap_or_else(|| panic!("Failed to install CTRL+C signal handler."));
     };
 
     #[cfg(unix)]
     let terminate = async {
         tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
-            .expect("Failed to install SIGTERM signal handler")
+            .unwrap_or_else(|| panic!("Failed to install SIGTERM signal handler."))
             .recv()
             .await;
     };

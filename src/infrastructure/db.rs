@@ -1,6 +1,8 @@
-use crate::config::CONFIG;
-use sea_orm::{ConnectOptions, Database, DatabaseConnection};
 use std::{sync::Arc, time::Duration};
+
+use sea_orm::{ConnectOptions, Database, DatabaseConnection};
+
+use crate::config::CONFIG;
 
 pub mod entity;
 pub mod repository;
@@ -13,7 +15,7 @@ pub struct Db {
 impl Db {
     pub async fn new() -> Self {
         let conn = Self::connect().await;
-        // self.migrate().await.unwrap();
+        Self::migrate(&conn).await;
         Self { conn }
     }
 
@@ -25,7 +27,15 @@ impl Db {
         Arc::new(
             Database::connect(opt)
                 .await
-                .expect("Failed to connect to DB"),
+                .unwrap_or_else(|_| panic!("Failed to connect to DB."))
         )
+    }
+
+
+    async fn migrate(conn: &Arc<DatabaseConnection>) {
+        sqlx::migrate!()
+            .run(conn)
+            .await
+            .unwrap_or_else(|_| panic!("Failed to migrate."))
     }
 }

@@ -1,10 +1,8 @@
-/* 
-    In PostgreSQL, user is a reserved word, so give it double quotations.
-    Also, table names should not be plural because SeaORM automatically generates Entity.
-*/
-CREATE TABLE IF NOT EXISTS "user" (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL,
-    email VARCHAR(255) NOT NULL,
+    first_name VARCHAR(64) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT users_id_pk PRIMARY KEY (id)

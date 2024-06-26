@@ -1,6 +1,9 @@
-use crate::domain::entity::user;
+use axum::async_trait;
 
-pub trait UserRepositoryImpl: Send + Sync {
-    async fn select_all(&self) -> anyhow::Result<Vec<user::Model>>;
-    async fn find_by_id(&self, id: i64) -> anyhow::Result<Option<user::Model>>;
+use crate::domain::model::user::user_entity::UserEntity;
+
+#[async_trait]
+pub trait UserRepository: Send + Sync + 'static {
+    async fn select_all(&self) -> anyhow::Result<Vec<UserEntity>>;
+    async fn find_by_id(&self, id: i32) -> anyhow::Result<Option<UserEntity>>;
 }
