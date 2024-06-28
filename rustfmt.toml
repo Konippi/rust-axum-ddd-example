@@ -1,5 +1,6 @@
 # See: https://rust-lang.github.io/rustfmt/
 group_imports = "StdExternalCrate"
 imports_granularity = "Crate"
+format_code_in_doc_comments = true
 wrap_comments = true
 comment_width = 100
