@@ -7,6 +7,7 @@ edition = "2021"
 anyhow = "1.0.83"
 axum = "0.7.5"
 chrono = "0.4.38"
+derive-getters = "0.4.0"
 derive-new = "0.6.0"
 dotenv = "0.15.0"
 garde = { version = "0.18.0", features = ["full"] }
@@ -18,8 +19,9 @@ sea-orm = { version = "0.12.15", features = ["sqlx-postgres", "runtime-tokio-nat
 serde = { version = "1.0.201", features = ["derive"] }
 serde_json = "1.0.116"
 sqlx = { version = "0.7.4", features = ["postgres"] }
-tokio = { version="1.37.0", features=["full"] }
+tokio = { version = "1.37.0", features = ["full"] }
 tower-http = { version = "0.5.2", features = ["trace", "timeout"] }
 tracing = "0.1.40"
 tracing-opentelemetry = "0.23.0"
 tracing-subscriber = { version = "0.3.18", features = ["json", "env-filter"] }
+regex = "1.10.4"
