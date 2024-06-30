@@ -25,3 +25,4 @@ tracing = "0.1.40"
 tracing-opentelemetry = "0.23.0"
 tracing-subscriber = { version = "0.3.18", features = ["json", "env-filter"] }
 regex = "1.10.4"
+thiserror = "1.0.61"
