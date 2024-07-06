@@ -2,7 +2,9 @@ use thiserror;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ValidationError {
+    #[error("{0}")]
+    InvalidFullName(String),
+
     #[error("")]
-    InvalidFullName(String)
-    InvalidEmail
+    InvalidEmail(String),
 }

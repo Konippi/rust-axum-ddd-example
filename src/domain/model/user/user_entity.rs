@@ -2,7 +2,7 @@ use derive_new::new;
 
 use crate::infrastructure::db::entity::users;
 
-use super::user_dto::UserDto;
+use super::{fullname::FullName, user_dto::UserDto};
 
 #[derive(new, Debug)]
 pub struct UserEntity {
@@ -15,7 +15,7 @@ impl From<users::Model> for UserEntity {
     fn from(user_model: users::Model) -> Self {
         UserEntity {
             id: user_model.id,
-            name: FullName::new(user_model.first_name, user_model.last_name),
+            name: FullName::new(&user_model.first_name, &user_model.last_name).unwrap(),
             email: Email::new(user_model.email),
         }
     }
