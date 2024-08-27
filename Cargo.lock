@@ -2045,7 +2045,6 @@ dependencies = [
  "derive-new",
  "dotenv",
  "garde",
- "once_cell",
  "opentelemetry",
  "opentelemetry-otlp",
  "opentelemetry_sdk",
