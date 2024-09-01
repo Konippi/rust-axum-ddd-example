@@ -10,6 +10,16 @@ script = [
     '''
 ]
 
+[tasks.create-migration]
+category = "sqlx"
+description = "Create a new migration"
+script = [
+    '''
+    echo "Creating a new migration..."
+    sqlx migrate add -r {{ARGS}}
+    '''
+]
+
 [tasks.db-migrate]
 category = "sqlx"
 description = "Run migrations"
