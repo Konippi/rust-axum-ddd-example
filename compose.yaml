@@ -9,10 +9,14 @@ services:
     ports:
       - "5432:5432"
     restart: always
+    volumes:
+      - postgres_volumes:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${POSTGRES_ROOT_USER}
       POSTGRES_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_APP_USER: ${POSTGRES_APP_USER}
       POSTGRES_APP_PASSWORD: ${POSTGRES_APP_PASSWORD}
-  
+
+volumes:
+  postgres_volumes:

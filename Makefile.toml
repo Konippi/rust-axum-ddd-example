@@ -1,60 +1,7 @@
-env_files = [  
-    ".env.local",
-    { path = ".env.dev", profile = "dev" },
-    { path = ".env.prod", profile = "prod"}
-]
-
-[env]
-ENV = "local"
-
-[env.dev]
-ENV = "dev"
-
-[env.prod]
-ENV = "prod"
-
-[tasks.docker-build]
-category = "docker"
-description = "Build docker images"
-script = [
-    '''
-    echo "Building docker images..."
-    docker compose --env-file .env.${ENV} build
-    '''
-]
-
-[tasks.docker-build-run]
-category = "docker"
-description = "Build and start docker containers"
-script = [
-    '''
-    echo "Building and Starting containers..."
-    docker compose --env-file .env.${ENV} up -d --build
-    '''
-]
-
-[tasks.docker-run]
-category = "docker"
-description = "Start docker containers"
-script = [
-    '''
-    echo "Starting containers..."
-    docker compose --env-file .env.${ENV} up -d
-    '''
-]
-
-[tasks.docker-stop]
-category = "docker"
-description = "Stop docker containers"
-script = [
-    '''
-    echo "Stopping containers..."
-    docker compose --env-file .env.${ENV} down
-    '''
-]
+env_files = [".env"]
 
 [tasks.enter-psql]
-category = "docker"
+category = "postgres"
 description = "Enter psql container"
 script = [
     '''
@@ -80,15 +27,5 @@ script = [
     '''
     echo "Rolling back migrations..."
     sqlx migrate revert --database-url ${DATABASE_URL}
-    '''
-]
-
-[tasks.entity-gen]
-category = "sea-orm"
-description = "Generate entities by SeaORM"
-script = [
-    '''
-    echo "Generating entities..."
-    sea-orm-cli generate entity -u ${DATABASE_URL} -o src/infrastructure/db/entity
     '''
 ]

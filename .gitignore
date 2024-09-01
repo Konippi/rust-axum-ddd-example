@@ -1,12 +1,5 @@
 # IDE
 .idea
 
-# env files
-.env.*
-!.env.local
-
 # build
 /target
-
-# docker
-/docker/postgres/data
