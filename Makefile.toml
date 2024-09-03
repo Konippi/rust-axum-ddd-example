@@ -3,39 +3,43 @@ env_files = [".env"]
 [tasks.enter-psql]
 category = "postgres"
 description = "Enter psql container"
+workspace = false
 script = [
     '''
     echo "Entering psql container..."
-    docker exec -it rust-axum-ddd-example-postgres psql -U ${POSTGRES_APP_USER} -d ${POSTGRES_DB}
+    docker exec -it rust-axum-ddd-example-postgres psql -U ${POSTGRES_APP_USER} -d ${POSTGRES_DB_NAME}
     '''
 ]
 
 [tasks.create-migration]
 category = "sqlx"
 description = "Create a new migration"
+workspace = false
 script = [
     '''
     echo "Creating a new migration..."
-    sqlx migrate add -r {{ARGS}}
+    sqlx migrate add -r ${@}
     '''
 ]
 
 [tasks.db-migrate]
 category = "sqlx"
 description = "Run migrations"
+workspace = false
 script = [
     '''
     echo "Running migrations..."
-    sqlx migrate run --database-url ${DATABASE_URL}
+    sqlx migrate run --database-url postgres://${POSTGRES_APP_USER}:${POSTGRES_APP_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB_NAME}
     '''
 ]
 
 [tasks.db-rollback]
 category = "sqlx"
 description = "Rollback migrations"
+workspace = false
 script = [
     '''
     echo "Rolling back migrations..."
-    sqlx migrate revert --database-url ${DATABASE_URL}
+    sqlx migrate revert --database-url postgres://${POSTGRES_APP_USER}:${POSTGRES_APP_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB_NAME}
     '''
 ]
